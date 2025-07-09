@@ -2,7 +2,7 @@
 
 ------------------------------------------------------------------
 
-Jaidee VPN Installer with Menu: SSH WebSocket + UDP (Hysteria)
+Jaidee VPN Installer with Extended Menu
 
 Supports Ubuntu 20–24 & Debian 11/12
 
@@ -10,7 +10,7 @@ Supports Ubuntu 20–24 & Debian 11/12
 
 set -e
 
-WS_PORT=80 UDP_PORT=36712 UDP_PASSWORD=jaideevpn DOMAIN=""
+WS_PORT=80 UDP_PORT=36712 UDP_PASSWORD=agnudp DOMAIN=""
 
 color() { local c="$1"; shift; echo -e "\e[${c}m$\e[0m"; } info()  { color 34 "[INFO] $"; } error() { color 31 "[ERR]  $*"; }
 
@@ -29,11 +29,15 @@ create_ws_service() { info "Setting up SSH over WebSocket…" cat >/etc/systemd/
 
 [Install] WantedBy=multi-user.target EOF systemctl daemon-reload systemctl enable --now ssh-websocket.service }
 
-install_agn_udp() { info "Installing JUE-UDP (Hysteria)…" curl -sO https://raw.githubusercontent.com/khaledagn/AGN-UDP/main/install_agnudp.sh chmod +x install_agnudp.sh DOMAIN="$DOMAIN" UDP_PORT=":${UDP_PORT}" PASSWORD="$UDP_PASSWORD" ./install_agnudp.sh }
+install_agn_udp() { info "Installing AGN-UDP (Hysteria)…" curl -sO https://raw.githubusercontent.com/khaledagn/AGN-UDP/main/install_agnudp.sh chmod +x install_agnudp.sh DOMAIN="$DOMAIN" UDP_PORT=":${UDP_PORT}" PASSWORD="$UDP_PASSWORD" ./install_agnudp.sh }
 
 configure_firewall() { info "Opening firewall ports ${WS_PORT}/tcp and ${UDP_PORT}/udp…" iptables -I INPUT -p tcp --dport ${WS_PORT} -j ACCEPT || true iptables -I INPUT -p udp --dport ${UDP_PORT} -j ACCEPT || true netfilter-persistent save }
 
-menu() { clear echo -e "\n💻 \e[1;32mJaidee VPN Installer Menu\e[0m\n" echo "[1] Install SSH over WebSocket (port $WS_PORT)" echo "[2] Install AGN-UDP (Hysteria UDP port $UDP_PORT)" echo "[3] Open Firewall Ports" echo "[4] Install Both (1 + 2 + 3)" echo "[5] Exit" echo -n "\nSelect an option [1-5]: " read -r opt case $opt in 1) install_packages; install_websocat; create_ws_service;; 2) install_packages; install_agn_udp;; 3) configure_firewall;; 4) install_packages; install_websocat; create_ws_service; install_agn_udp; configure_firewall;; 5) exit 0;; *) echo "Invalid option"; sleep 1; menu;; esac echo -e "\n✅ Done. Press Enter to return to menu." read -r menu }
+Placeholder functions for extended menu options
+
+todo() { echo -e "\n[TODO] This feature is not implemented yet: $1\n" sleep 2 }
+
+menu() { clear echo -e "\n💻 \e[1;32mJaidee VPN Extended Menu\e[0m\n" echo "[1] Install SSH over WebSocket (port $WS_PORT)" echo "[2] Install AGN-UDP (Hysteria UDP port $UDP_PORT)" echo "[3] Open Firewall Ports" echo "[4] Install Both (1 + 2 + 3)" echo "[5] Create Account" echo "[6] Delete Account" echo "[7] Set User Limit" echo "[8] Show Online Users" echo "[9] Renew User" echo "[10] Change Ports" echo "[11] Change Domain" echo "[12] Exit" echo -n "\nSelect an option [1-12]: " read -r opt case $opt in 1) install_packages; install_websocat; create_ws_service;; 2) install_packages; install_agn_udp;; 3) configure_firewall;; 4) install_packages; install_websocat; create_ws_service; install_agn_udp; configure_firewall;; 5) todo "Create Account";; 6) todo "Delete Account";; 7) todo "Set User Limit";; 8) todo "Show Online Users";; 9) todo "Renew User";; 10) todo "Change Ports";; 11) todo "Change Domain";; 12) exit 0;; *) echo "Invalid option"; sleep 1;; esac echo -e "\n✅ Done. Press Enter to return to menu." read -r menu }
 
 main() { require_root check_os menu }
 
