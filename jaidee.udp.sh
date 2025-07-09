@@ -8,8 +8,8 @@ set -e
 
 WS_PORT=80
 UDP_PORT=36712
-UDP_PASSWORD=agnudp
-DOMAIN=""
+UDP_PASSWORD=jaideevpn
+DOMAIN="ex.jaidee.site"
 
 color() { local c="$1"; shift; echo -e "\e[${c}m$*\e[0m"; }
 info()  { color 34 "[INFO] $*"; }
